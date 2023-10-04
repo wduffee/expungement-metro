@@ -9,29 +9,8 @@ import sys, getopt
 import requests
 from bs4 import BeautifulSoup
 
-def main(argv):
-    fname=""
-    lname=""
-    bday=""
-    opts, args = getopt.getopt(argv,"hf:l:b:") #,["fname=","lname=","bday="])
-    for opt, arg in opts:
-        if opt == '-h':
-            print("Syntax as follows:")
-            print("-f FIRSTNAME -l LASTNAME -b BIRTHDAY")
-            print("Please use double quotes around each argument")
-            print("BIRTHDAY needs to be in MM/DD/YYYY format")
-            sys.exit()
-        elif opt in ("-f"):
-            fname = arg
-        elif opt in ("-l"):
-            lname = arg
-        elif opt in ("-b"):
-            bday = arg
 
-    print ("First Name: ", fname)
-    print ("Last Name : ", str(lname))
-    print ("Birthday  : ", str(bday))
-
+def initial_search(fname,lname,bday):
     first_search = "https://sci.ccc.nashville.gov/Search/Search?firstName="+fname+"&lastname="+lname+"&birthday="+str(bday)
     print("First Search: " + first_search)
     r = requests.get(first_search, stream=True)
@@ -43,10 +22,15 @@ def main(argv):
     
     number_results = 0
     name_birthday_search = []
+
+    # Look through the results-list table and pull all links
+    # The links will provide the results without having to look at the table contents
     
     if results_html:
         for a in results_html.find_all('a', href=True):
             number_results += 1
+
+            # Don't add the same link more than once
             if a['href'] not in name_birthday_search:
                 name_birthday_search.append(a['href'])
                 # print("Found the URL: " + a['href'])
@@ -82,7 +66,7 @@ def main(argv):
                 try:
                     search_selection_value = int(search_selection)
                 except ValueError:
-                    print("Amount must be a number (no decinmals) from 0 to " + str(count-1))
+                    print("Amount must be a number (no decimals) from 0 to " + str(count-1))
 
                 # Is input an integer within range?
                 if search_selection_value > -1 and search_selection_value < count:
@@ -101,7 +85,43 @@ def main(argv):
             search_retrieval_link = name_birthday_search[search_selection_value-1]
             print(search_retrieval_link)
         else:
-            print("Goodbye.")
+            print("-----------\n| Goodbye |\n-----------\n")
+
+def main(argv):
+    fname=""
+    lname=""
+    bday=""
+    opts, args = getopt.getopt(argv,"hf:l:b:") #,["fname=","lname=","bday="])
+    for opt, arg in opts:
+        if opt == '-h':
+            print("Syntax as follows:")
+            print("-f FIRSTNAME -l LASTNAME -b BIRTHDAY")
+            print("Please use double quotes around each argument")
+            print("BIRTHDAY needs to be in MM/DD/YYYY format")
+            sys.exit()
+        elif opt in ("-f"):
+            fname = arg
+        elif opt in ("-l"):
+            lname = arg
+        elif opt in ("-b"):
+            bday = arg
+
+    # Check for correct input
+    while fname == "":
+        fname = input("First name is required. Please provide a first name to search: \n")
+    while lname == "":
+        lname = input("Last name is required. Please provide a last name to search: \n")
+    while bday == "":
+        bday = input("Birthday is required. Please provide a birthday in the MM/DD/YYYY format to search: \n")
+
+    print ("This is your search criteria:")
+    print ("First Name: ", fname)
+    print ("Last Name : ", lname)
+    print ("Birthday  : ", str(bday))
+
+    initial_search(fname,lname,bday)
+
+    
         
 if __name__ == "__main__":
     main(sys.argv[1:])
