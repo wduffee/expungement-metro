@@ -54,9 +54,6 @@ class Record:
         self.information = {}
         self.record_type = ""
 
-
-# Declare variables needed to get the program started  
-
 initial_search_args = {"fname": "", "lname": "", "bday": "", "oca":""}
 candidate = ExpungementCandidate()
 search_results = SearchResults()
@@ -260,6 +257,9 @@ def write_results():
     else:
         print("No Legacy Information Found.")
     
+
+# Enable the filling of PDF forms based on those linked from
+
 
 def main(argv):
     parse_options(argv)
