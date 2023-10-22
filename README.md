@@ -1,12 +1,12 @@
 # The *expungement-metro* utility
 
-This utility leverages the website of the Criminal Court Clerk of Metropolitan Nashville and Davidson County (or *CCC*) to search, format, and export relevant information for expungement candidates.
+This utility leverages the website of the Criminal Court Clerk of Metropolitan Nashville and Davidson County (*CCC*) to search, format, and export relevant information for expungement candidates.
 
-https://ccc.nashville.gov/about-our-services/expungement-information/
+Information about expungement in the Metropolitan Nashville and Davidson County area: https://ccc.nashville.gov/about-our-services/expungement-information/
 
 ## What does this script do?
 
-This utility takes as input search parameters and, after ensuring the search results are the desired data, exports CSV files for use.
+This utility takes as input search parameters and, after ensuring the search results contain the desired matches, exports CSV files for use.
 
 ## Why is this tool needed?
 
@@ -50,13 +50,13 @@ python3 search.py -f "John" -l "Smith" --nobirthday
 ### Running the utility with first name, last name, and a birthday
 
 ```bash
-python3 search.py -f "John" -l "Smith" --b "05/30/1950"
+python3 search.py -f "John" -l "Smith" -b "05/30/1950"
 ```
 
 ### Running the utility with first name, last name, birthday, and OCA number.
 
 ```bash
-python3 search.py -f "FIRSTNAME" -l "LASTNAME" --"05/30/1900" -o '123456'
+python3 search.py -f "FIRSTNAME" -l "LASTNAME" -b "05/30/1900" -o '123456'
 ```
 
 ## Program Execution
@@ -110,7 +110,7 @@ This is your search criteria:
 	First Name	:  John
 	Last Name 	:  Smith
 	Birthday  	:  05/30/1950
-    OCA         :  1233456
+        OCA             :  123456
 Selected search url: https://sci.ccc.nashville.gov/Search/CriminalHistory?P_CASE_IDENTIFIER=JOHN%5ESMITH%5E05301950%5E123456
 CJIS CSV created with 13 entries.
 Legacy CSV created with 3 entries.
