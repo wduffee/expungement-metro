@@ -21,7 +21,7 @@ This utility provides a mechanism where the same records available to the public
 You must have Python v3.2 or greater and the following libraries installed (in order of program execution):
 - **sys:** For running the utility\*
 - **argparse:** For parsing the command line parameters\*
-- **requests:** For gathering the data from the CCC site\*
+- **requests:** For gathering the data from the CCC site
 - **bs4 / BeautifulSoup:** For parsing the returned data from the CCC site
 - **datetime:** For proper parsing of returned data\*
 - **csv:** For exporting the formatted results\*
