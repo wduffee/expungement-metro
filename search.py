@@ -10,7 +10,8 @@ import requests
 from bs4 import BeautifulSoup
 import csv
 from datetime import datetime
-
+import xlsxwriter
+import pandas
 
 class SearchResults:
     def __init__(self):
@@ -42,11 +43,11 @@ class ExpungementCandidate:
         self.records.append(record)
 
     def return_record_information(self, record_type):
-        dict_to_return = []
+        list_to_return = []
         for record in self.records:
             if record.record_type == record_type:
-                dict_to_return.append(record.information)
-        return dict_to_return
+                list_to_return.append(record.information)
+        return list_to_return
 
 
 class Record:
@@ -54,7 +55,7 @@ class Record:
         self.information = {}
         self.record_type = ""
 
-initial_search_args = {"fname": "", "lname": "", "bday": "", "oca":""}
+initial_search_args = {"fname": "", "lname": "", "bday": "", "oca":"","csv":""}
 candidate = ExpungementCandidate()
 search_results = SearchResults()
 
@@ -67,6 +68,7 @@ def parse_options(argv):
     group.add_argument('-b','--birthday',help="Birthday to include in the search. Use MM/DD/YYYY format with quotes. Do not use with --nobirthday flag.")
     group.add_argument('--nobirthday',action='store_true',help="Do not include birthdays in the initial search. Required if omitting the -b/--birthday flag.")
     parser.add_argument('-o','--oca',help="OCA number to include in search (optional). Including this flag will bypass the initial search, potentially with unexpected results.")
+    parser.add_argument('--csv',action="store_true",help="Output in multiple CSV files instead of one xlsx file.")
     args = parser.parse_args()
 
     initial_search_args["fname"] = args.first
@@ -81,6 +83,10 @@ def parse_options(argv):
         initial_search_args["oca"] = ""
     else:
         initial_search_args["oca"] = args.oca
+    if args.csv == False:
+        initial_search_args["csv"] = "0"
+    else:
+        initial_search_args["csv"] = "1"
     
 
 def initial_search():
@@ -232,31 +238,49 @@ def selected_search():
 
 def write_results():
 
-    cases_filename = candidate.fname+"-"+candidate.lname+"-"+candidate.bday+"-"+search_results.return_report_datetime_for_filename()+"-cjis.csv"
-    arrests_filename = candidate.fname+"-"+candidate.lname+"-"+candidate.bday+"-"+search_results.return_report_datetime_for_filename()+"-legacy.csv"
-
     cases = candidate.return_record_information("Case")
-    
-    if len(cases) > 0:
-        with open(cases_filename,'w',encoding="utf8",newline="") as output_file:
-            fc = csv.DictWriter(output_file,fieldnames=cases[0].keys(),)
-            fc.writeheader()
-            fc.writerows(cases)
-        print("CJIS CSV created with",len(cases),"entries.")
-    else:
-        print("No CJIS Information Found.")
-    
     arrests = candidate.return_record_information("Arrest")
     
-    if len(arrests) > 0:
-        with open(arrests_filename,'w',encoding="utf8",newline="") as output_file:
-            fc = csv.DictWriter(output_file,fieldnames=arrests[0].keys(),)
-            fc.writeheader()
-            fc.writerows(arrests)
-        print("Legacy CSV created with",len(arrests),"entries.")
+    # No CSV flag passed, just export xlsx
+    if initial_search_args["csv"] == "0":
+
+        combined_filename = candidate.fname+"-"+candidate.lname+"-"+candidate.bday+"-"+search_results.return_report_datetime_for_filename()+".xlsx"
+        writer = pandas.ExcelWriter(combined_filename, engine='xlsxwriter')
+        
+        df = pandas.DataFrame(cases)
+        df.to_excel(writer,sheet_name = "CJIS", index=False)
+
+        df = pandas.DataFrame(arrests)
+        df.to_excel(writer,sheet_name = "Legacy", index=False)       
+        
+        writer.close()
+
+        print("XLSX File Created with",len(cases),"CJIS entries and",len(arrests),"Legacy entries.")
+
+        
     else:
-        print("No Legacy Information Found.")
     
+        cases_filename = candidate.fname+"-"+candidate.lname+"-"+candidate.bday+"-"+search_results.return_report_datetime_for_filename()+"-cjis.csv"
+        arrests_filename = candidate.fname+"-"+candidate.lname+"-"+candidate.bday+"-"+search_results.return_report_datetime_for_filename()+"-legacy.csv"
+
+        if len(cases) > 0:
+            with open(cases_filename,'w',encoding="utf8",newline="") as output_file:
+                fc = csv.DictWriter(output_file,fieldnames=cases[0].keys(),)
+                fc.writeheader()
+                fc.writerows(cases)
+            print("CJIS CSV created with",len(cases),"entries.")
+        else:
+            print("No CJIS Information Found.")
+    
+        if len(arrests) > 0:
+            with open(arrests_filename,'w',encoding="utf8",newline="") as output_file:
+                fc = csv.DictWriter(output_file,fieldnames=arrests[0].keys(),)
+                fc.writeheader()
+                fc.writerows(arrests)
+            print("Legacy CSV created with",len(arrests),"entries.")
+        else:
+            print("No Legacy Information Found.")
+   
 
 def main(argv):
     parse_options(argv)

@@ -6,7 +6,7 @@ Information about expungement in the Metropolitan Nashville and Davidson County 
 
 ## What does this script do?
 
-This utility takes as input search parameters and, after ensuring the search results contain the desired matches, exports CSV files for use.
+This utility takes as input search parameters and, after ensuring the search results contain the desired matches, exports files (either .csv or .xlsx) for use. The data is in two group - so called "CJIS" and "Legacy" groupings. These are dependant on the age of the records and how the CCC structured their data over time. It is important to examine both the CJIS and Legacy groupings for a complete view of the data.
 
 ## Why is this tool needed?
 
@@ -18,7 +18,7 @@ This utility provides a mechanism where the same records available to the public
 
 ## Prerequisites
 
-Python 3.2 or greater is recommended. See `requirements.txt` for required packages.
+Python 3.2 or greater is recommended. See `requirements.txt` in the github repository for additional required packages.
 
 ## Command Line Execution
 There is one file to run, `search.py`, which takes a variety of arguments. You must always include a first name and last name to search. There must be either specify a birthday (in MM/DD/YYYY format) or indicate that you do not want to include a birthday in the search. You can also include the OCA number in the search if known, which will bypass the initial search filtering and attempt to go straight to exporting data. Help is also available. 
@@ -28,6 +28,7 @@ There is one file to run, `search.py`, which takes a variety of arguments. You m
 - **-b BIRTHDAY, --birthday BIRTHDAY**: Birthday to include in the search. Use MM/DD/YYYY format with quotes. Do not use with --nobirthday flag.
 - **--nobirthday**: Do not include birthdays in the initial search. Required if omitting the -b/--birthday flag.
 - **-o OCA, --oca OCA**: OCA number to include in search (optional). Including this flag will bypass the initial search, potentially with unexpected results.
+- **--csv**: Output in multiple CSV files instead of one xlsx file.
 - **-h, --help**: Show a help message and exit
 
 ## Example Command Line Executions
@@ -52,12 +53,14 @@ python3 search.py -f "FIRSTNAME" -l "LASTNAME" -b "05/30/1900" -o '123456'
 
 ## Program Execution
 
+All of these examples use the optional `--csv` argument but the execution steps would be the same if omitted.
+
 ### Without the OCA parameter
 
 Running the utility without the OCA number generates all matching results from which the user can select their desired match: 
 
 ```
-$ python3 search.py -f "John" -l "Smith" -b "05/30/1950"
+$ python3 search.py -f "John" -l "Smith" -b "05/30/1950" --csv
 This is your search criteria:
 	First Name	:  John
 	Last Name 	:  Smith
@@ -96,7 +99,7 @@ Legacy CSV created with 3 entries.
 If the OCA number is known and entered on the command line, the initial search results step is skipped and the program skips straight to outputting the CSV files.
 
 ```
-$ python3 search.py -f "John" -l "Smith" -b "05/30/1950" -o "123456"
+$ python3 search.py -f "John" -l "Smith" -b "05/30/1950" -o "123456" --csv
 This is your search criteria:
 	First Name	:  John
 	Last Name 	:  Smith
@@ -109,11 +112,23 @@ Legacy CSV created with 3 entries.
 
 ## Output from Execution
 
-This person had 16 total records which were written to two CSV files, depending on the age of the record. These are written to the local directory in the format. Older records are in the "Legacy" and newer records are in the "CJIS" output. They follow the convention
+### Output as a single `xlsx` file
+
+By omitting the`--csv` argument, output is written in one XLSX file with one CJIS and one Legacy sheet. The xlsx file uses the following naming convention
+
+```
+FIRSTNAME-LASTNAME-BIRTHDAY-DATETIME_OF_RUNNING_UTILITY.xlsx
+```
+
+### Output as multiple `CSV` files
+
+When using the `--csv` argument at the time of execution, the output is written in two CSV files which use the following naming convention
 
 ```
 FIRSTNAME-LASTNAME-BIRTHDAY-DATETIME_OF_RUNNING_UTILITY-[legacy|cjis].csv
 ```
+
+#### Additional Output Information
 
 The `DATETIME_OF_RUNNING_UTILITY` is in North American Central Time.
 
@@ -126,5 +141,11 @@ Usage of this tool must abide by any terms put forth in via the CCC. See details
 
 # License and Source
 
-This tool is provided under the open source GPLv3 license with code available at https://github.com/wduffee/expungement-metro/
+This tool is provided under the open source GPLv3 license with code available at https://github.com/wduffee/expungement-metro/, unless otherwise licensed by the additional required libraries. 
+
+As of the latest build, licenses used by required libraries are
+- Beautiful Soup: https://github.com/akalongman/python-beautifulsoup/blob/master/LICENSE
+- XLSXWriter: https://github.com/jmcnamara/XlsxWriter/blob/main/LICENSE.txt
+- Pandas: https://github.com/pandas-dev/pandas/blob/main/LICENSE
+- Requests: https://github.com/psf/requests/blob/main/LICENSE
 
