@@ -258,9 +258,6 @@ def write_results():
         print("No Legacy Information Found.")
     
 
-# Enable the filling of PDF forms based on those linked from
-
-
 def main(argv):
     parse_options(argv)
     proceed = 0
