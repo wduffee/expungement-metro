@@ -18,16 +18,7 @@ This utility provides a mechanism where the same records available to the public
 
 ## Prerequisites
 
-You must have Python v3.2 or greater and the following libraries installed (in order of program execution):
-- **sys:** For running the utility\*
-- **argparse:** For parsing the command line parameters\*
-- **requests:** For gathering the data from the CCC site
-- **bs4 / BeautifulSoup:** For parsing the returned data from the CCC site
-- **datetime:** For proper parsing of returned data\*
-- **csv:** For exporting the formatted results\*
-
-*\* included in python 3.2 and greater by default*
-
+Python 3.2 or greater is recommended. See `requirements.txt` for required packages.
 
 ## Command Line Execution
 There is one file to run, `search.py`, which takes a variety of arguments. You must always include a first name and last name to search. There must be either specify a birthday (in MM/DD/YYYY format) or indicate that you do not want to include a birthday in the search. You can also include the OCA number in the search if known, which will bypass the initial search filtering and attempt to go straight to exporting data. Help is also available. 
